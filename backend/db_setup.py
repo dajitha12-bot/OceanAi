@@ -19,15 +19,15 @@ def verify_database_extensions():
         conn = psycopg2.connect(db_url)
         conn.autocommit = True
         cursor = conn.cursor()
-        print("✅ Database connection successful.")
+        print("SUCCESS: Database connection successful.")
         
         # 1. Check PostGIS
         try:
             cursor.execute("SELECT PostGIS_Version();")
             version = cursor.fetchone()[0]
-            print(f"✅ PostGIS is active. Version: {version}")
+            print(f"INFO: PostGIS is active. Version: {version}")
         except Exception:
-            print("❌ PostGIS extension is NOT active or NOT installed.")
+            print("ERROR: PostGIS extension is NOT active or NOT installed.")
             print("   Fix: Run 'CREATE EXTENSION IF NOT EXISTS postgis;' in the database.")
             
         # 2. Check pgvector
@@ -35,12 +35,12 @@ def verify_database_extensions():
             cursor.execute("SELECT extversion FROM pg_extension WHERE extname = 'vector';")
             res = cursor.fetchone()
             if res:
-                print(f"✅ pgvector is active. Version: {res[0]}")
+                print(f"INFO: pgvector is active. Version: {res[0]}")
             else:
                 cursor.execute("CREATE EXTENSION IF NOT EXISTS vector;")
-                print("✅ pgvector extension created successfully.")
+                print("SUCCESS: pgvector extension created successfully.")
         except Exception as e:
-            print("❌ pgvector extension is NOT active or NOT installed.")
+            print("ERROR: pgvector extension is NOT active or NOT installed.")
             print(f"   Error: {e}")
             print("   Fix: Ensure pgvector is compiled on your PostgreSQL server and run 'CREATE EXTENSION IF NOT EXISTS vector;'.")
             
@@ -48,7 +48,7 @@ def verify_database_extensions():
         conn.close()
         
     except Exception as e:
-        print("❌ Database connection failed.")
+        print("ERROR: Database connection failed.")
         print(f"   Error detail: {e}")
         print("   Ensure PostgreSQL is running and the credentials in DATABASE_URL are correct.")
 
