@@ -1,0 +1,68 @@
+[
+  {
+    "taxon_id": 127027,
+    "scientific_name": "Thunnus albacares",
+    "common_name": "Yellowfin Tuna",
+    "rank": "Species",
+    "taxonomy": {
+      "kingdom": "Animalia",
+      "phylum": "Chordata",
+      "class": "Actinopterygii",
+      "order": "Perciformes",
+      "family": "Scombridae",
+      "genus": "Thunnus"
+    },
+    "limits": {
+      "temp_min": 25.0,
+      "temp_max": 31.0,
+      "sal_min": 33.5,
+      "sal_max": 35.5,
+      "chlor_min": 1.0,
+      "chlor_max": 3.0
+    }
+  },
+  {
+    "taxon_id": 127021,
+    "scientific_name": "Rastrelliger kanagurta",
+    "common_name": "Indian Mackerel",
+    "rank": "Species",
+    "taxonomy": {
+      "kingdom": "Animalia",
+      "phylum": "Chordata",
+      "class": "Actinopterygii",
+      "order": "Perciformes",
+      "family": "Scombridae",
+      "genus": "Rastrelliger"
+    },
+    "limits": {
+      "temp_min": 26.0,
+      "temp_max": 32.0,
+      "sal_min": 30.0,
+      "sal_max": 34.5,
+      "chlor_min": 2.0,
+      "chlor_max": 6.0
+    }
+  },
+  {
+    "taxon_id": 137094,
+    "scientific_name": "Delphinus delphis",
+    "common_name": "Short-beaked Common Dolphin",
+    "rank": "Species",
+    "taxonomy": {
+      "kingdom": "Animalia",
+      "phylum": "Chordata",
+      "class": "Mammalia",
+      "order": "Artiodactyla",
+      "family": "Delphinidae",
+      "genus": "Delphinus"
+    },
+    "limits": {
+      "temp_min": 10.0,
+      "temp_max": 28.0,
+      "sal_min": 32.0,
+      "sal_max": 36.0,
+      "chlor_min": 0.1,
+      "chlor_max": 2.0
+    }
+  }
+]
