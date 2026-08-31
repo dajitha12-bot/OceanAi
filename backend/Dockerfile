@@ -46,5 +46,5 @@ RUN python manage.py collectstatic --noinput --settings=config.settings
 
 EXPOSE 8000
 
-# Start production server using Gunicorn
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
+# Start production server using Gunicorn - limited to 1 worker to fit in Render Free Tier 512MB RAM
+CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "1", "--threads", "2", "--timeout", "120"]
