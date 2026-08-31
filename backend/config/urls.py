@@ -16,7 +16,13 @@ router.register('anomalies', AnomalyViewSet, basename='anom')
 router.register('predictions', AIPredictionViewSet, basename='pred')
 router.register('insights', AIInsightsViewSet, basename='ins')
 
+from django.http import JsonResponse
+
+def health_check(request):
+    return JsonResponse({"status": "healthy", "project": "AI Ocean Intelligence Platform"})
+
 urlpatterns = [
+    path('', health_check, name='health_check'),
     path('admin/', admin.site.urls),
     
     # Root API routers
