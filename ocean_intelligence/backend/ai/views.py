@@ -6,8 +6,11 @@ from datetime import timedelta
 
 from ai.models import Anomaly, AIPrediction
 from ai.serializers import AnomalySerializer, AIPredictionSerializer
+from ai.anomaly.model import OceanAnomalyDetector
+from ai.prediction.model import OceanConditionForecaster
 from biodiversity.models import BiodiversityIndicator
 from fisheries.models import Species
+from ai.suitability.model import SpeciesSuitabilityModel
 
 class AnomalyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Anomaly.objects.all().order_by('-timestamp')
@@ -16,7 +19,6 @@ class AnomalyViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, methods=['post'], url_path='scan')
     def scan_anomalies(self, request):
         """Triggers scan of recent observations for anomalies using Isolation Forest."""
-        from ai.anomaly.model import OceanAnomalyDetector
         detector = OceanAnomalyDetector()
         try:
             count = detector.scan_and_save_new_observations()
@@ -45,7 +47,6 @@ class AIPredictionViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, methods=['post'], url_path='generate-forecasts')
     def generate_forecasts(self, request):
         """Triggers ML model to predict future conditions for coordinates and save them."""
-        from ai.prediction.model import OceanConditionForecaster
         forecaster = OceanConditionForecaster()
         try:
             count = forecaster.generate_and_save_forecasts()
@@ -93,7 +94,6 @@ class AIInsightsViewSet(viewsets.ViewSet):
                     {"name": "Chennai Zone C (Deep Sea)", "lat": 13.2, "lng": 81.0}
                 ]
                 
-                from ai.suitability.model import SpeciesSuitabilityModel
                 model = SpeciesSuitabilityModel(tuna.scientific_name)
                 # Try loading trained
                 try:

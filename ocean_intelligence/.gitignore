@@ -1,0 +1,30 @@
+# Python / Django
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+ENV/
+env/
+.env
+db.sqlite3
+db.sqlite3-journal
+staticfiles/
+media/
+
+# JavaScript / Node / React
+node_modules/
+dist/
+build/
+.vite/
+.eslintcache
+
+# IDEs / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Project-specific
+ocean_intelligence.zip
+*.log
+*.pyc

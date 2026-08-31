@@ -9,6 +9,7 @@ from rag.utils import get_embedding, get_mock_embedding
 from rag.models import DocumentChunk, Document
 from ai.models import Anomaly
 from fisheries.models import Species
+from ai.suitability.model import SpeciesSuitabilityModel
 from biodiversity.models import BiodiversityIndicator
 
 def perform_vector_search(query_text, limit=3):
@@ -89,7 +90,6 @@ def retrieve_structured_data(query_text):
                 {"name": "Chennai Zone B (Shelf)", "lat": 13.1, "lng": 80.6, "t": 29.1, "s": 34.6, "c": 2.1},
                 {"name": "Chennai Zone C (Deep Sea)", "lat": 13.2, "lng": 81.0, "t": 26.8, "s": 35.1, "c": 0.4}
             ]
-            from ai.suitability.model import SpeciesSuitabilityModel
             model = SpeciesSuitabilityModel(tuna.scientific_name)
             try:
                 model.train()

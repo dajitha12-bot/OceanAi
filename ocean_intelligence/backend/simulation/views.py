@@ -3,6 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.conf import settings
 
+from ai.suitability.model import SpeciesSuitabilityModel
+from biodiversity.risk_analysis import BiodiversityRiskAnalyzer
 from fisheries.models import Species
 from ocean.models import OceanObservation
 
@@ -46,8 +48,6 @@ class WhatIfSimulationView(APIView):
         sim_chlor = max(0.01, base_chlor + chlor_delta) # Prevent negative chlorophyll
         
         # 3. Run ML suitability models
-        from ai.suitability.model import SpeciesSuitabilityModel
-        from biodiversity.risk_analysis import BiodiversityRiskAnalyzer
         suit_model = SpeciesSuitabilityModel(species_name)
         try:
             suit_model.train()

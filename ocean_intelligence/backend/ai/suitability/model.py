@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from datetime import datetime
+from sklearn.ensemble import RandomForestClassifier
 from django.apps import apps
 
 # Custom preprocessors
@@ -9,7 +10,7 @@ from ai.feature_engineering.preprocess import clean_ocean_data, engineer_tempora
 class SpeciesSuitabilityModel:
     def __init__(self, species_scientific_name):
         self.species_name = species_scientific_name
-        self.model = None
+        self.model = RandomForestClassifier(n_estimators=50, max_depth=5, random_state=42)
         self.is_trained = False
         
         # Load Species limits from database
@@ -29,7 +30,7 @@ class SpeciesSuitabilityModel:
                 'chlor_max': sp.chlorophyll_max or 3.0,
                 'common_name': sp.common_name or self.species_name
             }
-        except Exception:
+        except Species.DoesNotExist:
             # Standard yellowfin tuna defaults
             return {
                 'temp_min': 25.0, 'temp_max': 31.0,
@@ -43,16 +44,13 @@ class SpeciesSuitabilityModel:
         Trains a Random Forest classifier mapping historical observations to species occurrences.
         If data is insufficient, raises ValueError so we fall back to heuristic index.
         """
-        from sklearn.ensemble import RandomForestClassifier
-        self.model = RandomForestClassifier(n_estimators=30, max_depth=5, random_state=42)
-        
         OceanObservation = apps.get_model('ocean', 'OceanObservation')
         FisheriesOccurrence = apps.get_model('fisheries', 'FisheriesOccurrence')
         Species = apps.get_model('fisheries', 'Species')
         
         try:
             sp = Species.objects.get(scientific_name=self.species_name)
-        except Exception:
+        except Species.DoesNotExist:
             raise ValueError(f"Species {self.species_name} not found in database.")
             
         occurrences = FisheriesOccurrence.objects.filter(species=sp)
@@ -95,8 +93,10 @@ class SpeciesSuitabilityModel:
             raise ValueError("Could not match occurrences to observation coordinates.")
             
         # Generate pseudo-absences
+        # Sample points from observations that are distant from occurrence coordinates
         absences = []
         for _, obs in df_obs.sample(min(len(df_obs), len(presences) * 2)).iterrows():
+            # Verify this obs is not close to any occurrence
             dist_to_occs = np.sqrt((df_occ['latitude'] - obs['latitude'])**2 + (df_occ['longitude'] - obs['longitude'])**2)
             if dist_to_occs.min() > 0.5:
                 absences.append({
@@ -109,6 +109,7 @@ class SpeciesSuitabilityModel:
                     'target': 0
                 })
                 
+        # If absences is empty, generate randomized absences outside preference ranges
         if not absences:
             for _ in range(len(presences)):
                 absences.append({
@@ -121,6 +122,7 @@ class SpeciesSuitabilityModel:
                     'target': 0
                 })
                 
+        # Combine and train
         df_train = pd.DataFrame(presences + absences)
         X = df_train[['temperature', 'salinity', 'chlorophyll', 'latitude', 'longitude', 'month']]
         y = df_train['target']
@@ -143,7 +145,7 @@ class SpeciesSuitabilityModel:
             'month': timestamp.month if timestamp else datetime.now().month
         }
         
-        if self.is_trained and self.model:
+        if self.is_trained:
             # Predict using Random Forest
             X_test = pd.DataFrame([features_dict])
             prob = self.model.predict_proba(X_test)[0][1] # Probability of Class 1
@@ -162,6 +164,7 @@ class SpeciesSuitabilityModel:
             val = features_dict[param]
             opt = (min_val + max_val) / 2.0
             
+            # Simple contribution ranking (higher is better aligned)
             tol = (max_val - min_val) / 2.0
             deviation = abs(val - opt)
             suit = max(0, 1.0 - (deviation / tol)) if tol > 0 else 0
@@ -191,5 +194,6 @@ class SpeciesSuitabilityModel:
         s_sal = gaussian_suitability(sal, self.species_limits['sal_min'], self.species_limits['sal_max'])
         s_chlor = gaussian_suitability(chlor, self.species_limits['chlor_min'], self.species_limits['chlor_max'])
         
+        # Joint probability
         suitability = s_temp * s_sal * s_chlor
         return round(suitability * 100.0, 1)

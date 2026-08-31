@@ -1,23 +1,19 @@
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
+from sklearn.ensemble import RandomForestRegressor
 from django.apps import apps
 from django.utils import timezone
 
 class OceanConditionForecaster:
     def __init__(self):
-        self.temp_model = None
-        self.sal_model = None
-        self.chlor_model = None
+        self.temp_model = RandomForestRegressor(n_estimators=30, max_depth=5, random_state=42)
+        self.sal_model = RandomForestRegressor(n_estimators=30, max_depth=5, random_state=42)
+        self.chlor_model = RandomForestRegressor(n_estimators=30, max_depth=5, random_state=42)
         self.is_trained = False
 
     def train(self):
         """Trains models predicting Temp, Salinity, Chlorophyll based on location and season."""
-        from sklearn.ensemble import RandomForestRegressor
-        self.temp_model = RandomForestRegressor(n_estimators=30, max_depth=5, random_state=42)
-        self.sal_model = RandomForestRegressor(n_estimators=30, max_depth=5, random_state=42)
-        self.chlor_model = RandomForestRegressor(n_estimators=30, max_depth=5, random_state=42)
-        
         OceanObservation = apps.get_model('ocean', 'OceanObservation')
         obs = OceanObservation.objects.all()
         
@@ -37,6 +33,7 @@ class OceanConditionForecaster:
             })
             
         df = pd.DataFrame(data)
+        
         X = df[['latitude', 'longitude', 'day_of_year']]
         
         self.temp_model.fit(X, df['temperature'])
@@ -58,18 +55,22 @@ class OceanConditionForecaster:
             target_date = start + timedelta(days=d)
             day_of_yr = target_date.timetuple().tm_yday
             
-            if self.is_trained and self.temp_model and self.sal_model and self.chlor_model:
+            if self.is_trained:
                 X_pred = pd.DataFrame([[latitude, longitude, day_of_yr]], columns=['latitude', 'longitude', 'day_of_year'])
                 temp = float(self.temp_model.predict(X_pred)[0])
                 sal = float(self.sal_model.predict(X_pred)[0])
                 chlor = float(self.chlor_model.predict(X_pred)[0])
                 model_name = "Random Forest Regressor (ML)"
             else:
+                # Fallback to physical seasonal climatology model:
+                # Temp cycles around 28C, salinity around 34.0, chlorophyll around 1.5
+                # Phase offset peak in July (day 180)
                 phase = 2 * np.pi * (day_of_yr - 180) / 365.0
-                temp = 28.0 + 1.5 * np.cos(phase) + 0.1 * d
+                temp = 28.0 + 1.5 * np.cos(phase) + 0.1 * d # include small daily trend
                 sal = 34.0 + 0.5 * np.sin(phase)
                 chlor = 1.8 + 0.6 * np.cos(phase + 1.0)
                 
+                # Apply slight coordinate-based shifts to make map layers look diverse
                 lat_shift = (latitude - 13.0) * 0.2
                 lng_shift = (longitude - 80.0) * 0.1
                 temp += lat_shift
@@ -92,13 +93,16 @@ class OceanConditionForecaster:
         OceanObservation = apps.get_model('ocean', 'OceanObservation')
         AIPrediction = apps.get_model('ai', 'AIPrediction')
         
+        # Try to train
         try:
             self.train()
-        except Exception:
+        except ValueError:
             pass
             
+        # Get unique locations from recent observations
         unique_locs = OceanObservation.objects.values('latitude', 'longitude').distinct()[:5]
         if not unique_locs:
+            # Default locations around Chennai
             unique_locs = [
                 {'latitude': 13.0, 'longitude': 80.3},
                 {'latitude': 13.1, 'longitude': 80.6},
@@ -113,6 +117,7 @@ class OceanConditionForecaster:
             preds = self.predict_future_conditions(lat, lng, start_date=forecast_date, days=7)
             
             for p in preds:
+                # Save Temperature forecast
                 AIPrediction.objects.update_or_create(
                     target_type='temperature',
                     target_id=f"({round(lat, 2)}, {round(lng, 2)})",
@@ -126,6 +131,7 @@ class OceanConditionForecaster:
                     }
                 )
                 
+                # Save Salinity forecast
                 AIPrediction.objects.update_or_create(
                     target_type='salinity',
                     target_id=f"({round(lat, 2)}, {round(lng, 2)})",
@@ -139,6 +145,7 @@ class OceanConditionForecaster:
                     }
                 )
                 
+                # Save Chlorophyll forecast
                 AIPrediction.objects.update_or_create(
                     target_type='chlorophyll',
                     target_id=f"({round(lat, 2)}, {round(lng, 2)})",

@@ -8,6 +8,7 @@ from django.views.decorators.cache import cache_page
 from fisheries.models import Species, FisheriesOccurrence
 from fisheries.serializers import SpeciesSerializer, FisheriesOccurrenceSerializer
 from ocean.models import OceanObservation
+from ai.suitability.model import SpeciesSuitabilityModel
 
 class SpeciesViewSet(viewsets.ModelViewSet):
     queryset = Species.objects.all().order_by('scientific_name')

@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from sklearn.ensemble import IsolationForest
 from django.apps import apps
 from django.utils import timezone
 
@@ -7,15 +8,12 @@ from ai.feature_engineering.preprocess import clean_ocean_data
 
 class OceanAnomalyDetector:
     def __init__(self):
-        self.model = None
+        self.model = IsolationForest(contamination=0.05, random_state=42)
         self.is_trained = False
         self.baselines = {}  # Store baseline mean/std for variables
 
     def train(self):
         """Trains Isolation Forest on all available historical data."""
-        from sklearn.ensemble import IsolationForest
-        self.model = IsolationForest(contamination=0.05, random_state=42)
-        
         OceanObservation = apps.get_model('ocean', 'OceanObservation')
         obs = OceanObservation.objects.all()
         
@@ -47,6 +45,7 @@ class OceanAnomalyDetector:
         Scans a set of inputs and returns list of anomalies if detected.
         Checks Temperature, Salinity, and Chlorophyll.
         """
+        # Load baseline stats if empty
         if not self.baselines:
             self._load_fallback_baselines()
 
@@ -55,7 +54,7 @@ class OceanAnomalyDetector:
         
         # 1. Isolation Forest check (Joint multivariate anomaly)
         is_anomaly_mv = False
-        if self.is_trained and self.model:
+        if self.is_trained:
             X_test = pd.DataFrame([[temperature, salinity, chlorophyll]], columns=['temperature', 'salinity', 'chlorophyll'])
             pred = self.model.predict(X_test)[0]
             if pred == -1:
@@ -68,6 +67,7 @@ class OceanAnomalyDetector:
             
             z_score = abs(val - mean) / std if std > 0 else 0
             
+            # Threshold: z-score > 2.0 (95% range) is moderate anomaly, > 3.0 is high severity
             if z_score > 2.0 or (is_anomaly_mv and z_score > 1.5):
                 severity = 'High' if z_score > 3.0 else 'Medium'
                 if z_score <= 2.0:
@@ -81,7 +81,7 @@ class OceanAnomalyDetector:
                     'latitude': latitude,
                     'longitude': longitude,
                     'timestamp': timestamp or timezone.now(),
-                    'model_method': 'Isolation Forest + Z-Score' if (self.is_trained and self.model) else 'Statistical Z-Score Baseline'
+                    'model_method': 'Isolation Forest + Z-Score' if self.is_trained else 'Statistical Z-Score Baseline'
                 })
                 
         return results
@@ -99,11 +99,15 @@ class OceanAnomalyDetector:
         OceanObservation = apps.get_model('ocean', 'OceanObservation')
         Anomaly = apps.get_model('ai', 'Anomaly')
         
+        # Try to train model
         try:
             self.train()
-        except Exception:
+        except ValueError:
             self._load_fallback_baselines()
             
+        # Get observations that haven't been scanned (not logged in anomaly database)
+        # For simplicity, we scan observations added in the last 2 hours or just check all
+        # and avoid duplicates
         obs_to_scan = OceanObservation.objects.all().order_by('-timestamp')[:100]
         
         anomaly_count = 0
@@ -114,6 +118,7 @@ class OceanAnomalyDetector:
             )
             
             for res in anom_results:
+                # Avoid duplicates
                 exists = Anomaly.objects.filter(
                     parameter=res['parameter'],
                     latitude=res['latitude'],

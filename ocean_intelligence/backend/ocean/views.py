@@ -7,6 +7,7 @@ from django.apps import apps
 from ocean.models import Region, OceanObservation
 from ocean.serializers import RegionSerializer, OceanObservationSerializer
 from ai.models import Anomaly
+from ai.suitability.model import SpeciesSuitabilityModel
 
 class RegionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Region.objects.all().order_by('name')
