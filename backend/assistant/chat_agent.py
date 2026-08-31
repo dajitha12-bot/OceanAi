@@ -142,20 +142,43 @@ def query_llm_assistant(user_message):
     
     combined_prompt = f"{system_prompt}\n\nUSER QUESTION: {user_message}\n{db_context}\n{rag_context}\n\nGROUNDED ANSWER:"
     
+    import requests
+
     # Check LLM configuration
-    key = getattr(settings, 'LLM_API_KEY', None)
+    key = getattr(settings, 'LLM_API_KEY', None) or os.getenv('LLM_API_KEY')
     provider = getattr(settings, 'LLM_PROVIDER', 'gemini')
-    is_demo = getattr(settings, 'DEMO_MODE', True)
     
-    if is_demo or not key:
+    if not key:
         return generate_mock_chat_response(user_message, db_context, rag_chunks)
         
     try:
         if provider == 'gemini':
+            # 1. Direct REST API call via Google AI Studio API
+            model_name = getattr(settings, 'LLM_MODEL', 'gemini-1.5-flash')
+            endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={key}"
+            payload = {
+                "contents": [
+                    {
+                        "parts": [{"text": combined_prompt}]
+                    }
+                ],
+                "generationConfig": {
+                    "temperature": 0.2,
+                    "maxOutputTokens": 1024
+                }
+            }
+            res = requests.post(endpoint, json=payload, timeout=25)
+            if res.status_code == 200:
+                data = res.json()
+                text = data.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', '')
+                if text:
+                    return text
+                    
+            # 2. SDK Fallback
             from google import genai
             client = genai.Client(api_key=key)
             response = client.models.generate_content(
-                model=getattr(settings, 'LLM_MODEL', 'gemini-1.5-flash'),
+                model=model_name,
                 contents=combined_prompt
             )
             return response.text
@@ -173,8 +196,8 @@ def query_llm_assistant(user_message):
             return response.choices[0].message.content
             
     except Exception as e:
-        # Network/Key error fallback
-        return f"*(LLM API error: {str(e)}. Displaying grounded local response)*\n\n" + \
+        # Fallback to local grounded answer if LLM quota / key issue occurs
+        return f"*(LLM Notice: {str(e)})*\n\n" + \
                generate_mock_chat_response(user_message, db_context, rag_chunks)
 
 
