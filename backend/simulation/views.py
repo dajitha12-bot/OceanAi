@@ -5,8 +5,13 @@ from django.conf import settings
 
 from fisheries.models import Species
 from ocean.models import OceanObservation
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
+@method_decorator(csrf_exempt, name='dispatch')
 class WhatIfSimulationView(APIView):
+    authentication_classes = []
+    permission_classes = []
     """
     Accepts modifications to environmental variables (Temperature, Salinity, Chlorophyll),
     runs the ML suitability and biodiversity risk pipelines under both baseline and simulated states,

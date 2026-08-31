@@ -22,8 +22,14 @@ class ChatHistoryViewSet(viewsets.ReadOnlyModelViewSet):
         return self.queryset.none()
 
 
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+
+@method_decorator(csrf_exempt, name='dispatch')
 class ChatAssistantView(APIView):
     """Conversational endpoint interfacing user query to LLM+RAG+DB workflow."""
+    authentication_classes = []
+    permission_classes = []
     
     def post(self, request):
         message = request.data.get('message')
