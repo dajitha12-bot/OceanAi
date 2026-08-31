@@ -171,7 +171,7 @@ export default function Dashboard({ onLocate }: DashboardProps) {
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={observations} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#1b2a47" />
-                  <XAxis dataKey="time" stroke="#64748b" fontSize={10} fontClassName="font-mono" />
+                  <XAxis dataKey="time" stroke="#64748b" fontSize={10} className="font-mono" />
                   <YAxis yAxisId="left" stroke="#00b4d8" fontSize={10} />
                   <YAxis yAxisId="right" orientation="right" stroke="#48cae4" fontSize={10} />
                   <Tooltip contentStyle={{ backgroundColor: '#0e172c', borderColor: '#3a506b', fontSize: 11 }} />

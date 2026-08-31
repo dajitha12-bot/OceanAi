@@ -287,11 +287,10 @@ export default function MapView({ center, zoom, onLocationChange }: MapViewProps
                 center={[lat, lng]}
                 radius={8}
                 pathOptions={{
-                  colorColor: '#ef4444',
                   fillColor: '#ef4444',
                   fillOpacity: 0.6,
                   weight: 2,
-                  color: '#ffffff'
+                  color: '#ef4444'
                 }}
               >
                 <Popup>
