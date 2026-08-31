@@ -154,8 +154,13 @@ def query_llm_assistant(user_message):
     try:
         if provider == 'gemini':
             # 1. Direct REST API call via Google AI Studio API
-            model_name = getattr(settings, 'LLM_MODEL', 'gemini-1.5-flash')
-            endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={key}"
+            model_candidates = [
+                getattr(settings, 'LLM_MODEL', 'gemini-3.6-flash'),
+                'gemini-3.6-flash',
+                'gemini-3.7-flash',
+                'gemini-flash-latest'
+            ]
+            
             payload = {
                 "contents": [
                     {
@@ -167,21 +172,18 @@ def query_llm_assistant(user_message):
                     "maxOutputTokens": 1024
                 }
             }
-            res = requests.post(endpoint, json=payload, timeout=25)
-            if res.status_code == 200:
-                data = res.json()
-                text = data.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', '')
-                if text:
-                    return text
-                    
-            # 2. SDK Fallback
-            from google import genai
-            client = genai.Client(api_key=key)
-            response = client.models.generate_content(
-                model=model_name,
-                contents=combined_prompt
-            )
-            return response.text
+            
+            for m in model_candidates:
+                endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent?key={key}"
+                try:
+                    res = requests.post(endpoint, json=payload, timeout=25)
+                    if res.status_code == 200:
+                        data = res.json()
+                        text = data.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', '')
+                        if text:
+                            return text
+                except Exception:
+                    continue
             
         elif provider == 'openai':
             from openai import OpenAI

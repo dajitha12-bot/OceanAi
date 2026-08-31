@@ -197,7 +197,7 @@ COPERNICUS_USERNAME = os.getenv('COPERNICUS_USERNAME')
 COPERNICUS_PASSWORD = os.getenv('COPERNICUS_PASSWORD')
 LLM_API_KEY = os.getenv('LLM_API_KEY')
 LLM_PROVIDER = os.getenv('LLM_PROVIDER', 'gemini')  # gemini or openai
-LLM_MODEL = os.getenv('LLM_MODEL', 'gemini-1.5-flash')
+LLM_MODEL = os.getenv('LLM_MODEL', 'gemini-3.6-flash')
 
 # Demo Mode toggle
 DEMO_MODE = os.getenv('DEMO_MODE', 'True').lower() == 'true'
