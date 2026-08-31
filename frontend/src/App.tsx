@@ -5,10 +5,11 @@ import MapView from './components/Map'
 import Assistant from './components/Assistant'
 import Simulation from './components/Simulation'
 import Insights from './components/Insights'
+import { API_BASE } from './api'
 
 function App() {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'map' | 'assistant' | 'simulation' | 'insights'>('dashboard')
-  const [isDemoMode, setIsDemoMode] = useState<boolean>(true)
+  const [isDemoMode, setIsDemoMode] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(true)
   
   // Coordinates synced from assistant to map
@@ -17,7 +18,7 @@ function App() {
 
   useEffect(() => {
     // Check backend connection and mode
-    fetch('/api/insights/')
+    fetch(`${API_BASE}/api/insights/`)
       .then((res) => res.json())
       .then((data) => {
         // If data is received, check if it indicates demo or live

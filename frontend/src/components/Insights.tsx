@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
 import { AlertCircle, ShieldAlert, CheckCircle2, Locate, RefreshCw, Layers } from 'lucide-react'
+import { API_BASE } from '../api'
 
 interface InsightsProps {
   onLocate: (lat: number, lng: number) => void
@@ -12,7 +12,7 @@ export default function Insights({ onLocate }: InsightsProps) {
 
   const fetchInsightsData = () => {
     setLoading(true)
-    fetch('/api/insights/')
+    fetch(`${API_BASE}/api/insights/`)
       .then(res => res.json())
       .then(data => {
         setInsights(data)
@@ -31,14 +31,14 @@ export default function Insights({ onLocate }: InsightsProps) {
   const triggerRecalculate = () => {
     setRecalculating(true)
     // 1. Recalculate Biodiversity Risk Indicators in backend
-    fetch('/api/biodiversity/indicators/recalculate/', { method: 'POST' })
+    fetch(`${API_BASE}/api/biodiversity/indicators/recalculate/`, { method: 'POST' })
       .then(() => {
         // 2. Scan recent observations for anomalies
-        return fetch('/api/anomalies/scan/', { method: 'POST' })
+        return fetch(`${API_BASE}/api/anomalies/scan/`, { method: 'POST' })
       })
       .then(() => {
         // 3. Generate future predictions/forecasts
-        return fetch('/api/predictions/generate-forecasts/', { method: 'POST' })
+        return fetch(`${API_BASE}/api/predictions/generate-forecasts/`, { method: 'POST' })
       })
       .then(() => {
         // Refresh insights

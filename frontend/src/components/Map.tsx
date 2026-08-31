@@ -29,7 +29,7 @@ export default function MapView({ center, zoom, onLocationChange }: MapViewProps
   const geoJsonRef = useRef<any>(null)
 
   useEffect(() => {
-    fetch('/api/map/')
+    fetch(`${API_BASE}/api/map/`)
       .then((res) => res.json())
       .then((data) => {
         setLayersData(data)

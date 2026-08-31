@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts'
 import { Sliders, HelpCircle, Thermometer, ShieldAlert, Activity, RefreshCw } from 'lucide-react'
+import { API_BASE } from '../api'
 
 export default function Simulation() {
   // Sliders state (deltas)
@@ -17,7 +18,7 @@ export default function Simulation() {
 
   // Fetch initial forecasts
   useEffect(() => {
-    fetch('/api/predictions/?target_type=temperature')
+    fetch(`${API_BASE}/api/predictions/?target_type=temperature`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
@@ -69,7 +70,7 @@ export default function Simulation() {
 
   const triggerSimulation = () => {
     setLoading(true)
-    fetch('/api/simulation/what-if/', {
+    fetch(`${API_BASE}/api/simulation/what-if/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

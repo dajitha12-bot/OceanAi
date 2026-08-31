@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Send, User, Compass, HelpCircle, Locate, CheckCircle } from 'lucide-react'
+import { API_BASE } from '../api'
 
 interface AssistantProps {
   onLocate: (lat: number, lng: number) => void
@@ -56,7 +57,7 @@ export default function Assistant({ onLocate }: AssistantProps) {
     setInput('')
     setSending(true)
 
-    fetch('/api/assistant/chat/', {
+    fetch(`${API_BASE}/api/assistant/chat/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: jsonStringify({ message: textToSend, session_id: sessionId })

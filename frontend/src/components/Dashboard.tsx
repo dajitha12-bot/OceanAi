@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { AlertTriangle, Fish, ShieldAlert, TrendingUp, Locate } from 'lucide-react'
+import { API_BASE } from '../api'
 
 interface DashboardProps {
   onLocate: (lat: number, lng: number) => void
@@ -13,9 +14,9 @@ export default function Dashboard({ onLocate }: DashboardProps) {
 
   useEffect(() => {
     // 1. Fetch AI Insights
-    const fetchInsights = fetch('/api/insights/').then(res => res.json())
+    const fetchInsights = fetch(`${API_BASE}/api/insights/`).then(res => res.json())
     // 2. Fetch Observations
-    const fetchObs = fetch('/api/ocean/observations/?limit=30').then(res => res.json())
+    const fetchObs = fetch(`${API_BASE}/api/ocean/observations/?limit=30`).then(res => res.json())
 
     Promise.all([fetchInsights, fetchObs])
       .then(([insightsData, obsData]) => {
