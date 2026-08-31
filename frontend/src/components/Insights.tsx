@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { AlertCircle, ShieldAlert, CheckCircle2, Locate, RefreshCw, Layers } from 'lucide-react'
 import { API_BASE } from '../api'
 

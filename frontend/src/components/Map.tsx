@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { MapContainer, TileLayer, GeoJSON, CircleMarker, Popup, useMap } from 'react-leaflet'
 import { AlertCircle, Eye, EyeOff } from 'lucide-react'
+import { API_BASE } from '../api'
 
 // Import Leaflet styles
 import 'leaflet/dist/leaflet.css'
