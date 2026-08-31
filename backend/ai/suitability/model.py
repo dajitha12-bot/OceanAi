@@ -156,9 +156,9 @@ class SpeciesSuitabilityModel:
             
         # Feature contributions: calculate distances from optimal parameters
         contributions = {}
-        for param, name in [('temperature', 'Temperature'), ('salinity', 'Salinity'), ('chlorophyll', 'Chlorophyll')]:
-            min_val = self.species_limits[f"{param[:4] if param != 'chlorophyll' else 'chlor'}_min"]
-            max_val = self.species_limits[f"{param[:4] if param != 'chlorophyll' else 'chlor'}_max"]
+        for param, key_prefix, name in [('temperature', 'temp', 'Temperature'), ('salinity', 'sal', 'Salinity'), ('chlorophyll', 'chlor', 'Chlorophyll')]:
+            min_val = self.species_limits.get(f"{key_prefix}_min", 0.0)
+            max_val = self.species_limits.get(f"{key_prefix}_max", 100.0)
             val = features_dict[param]
             opt = (min_val + max_val) / 2.0
             
