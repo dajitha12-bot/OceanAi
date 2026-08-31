@@ -261,10 +261,11 @@ export default function MapView({ center, zoom, onLocationChange }: MapViewProps
         >
           <MapController center={center} zoom={zoom} />
           
-          {/* CartoDB Dark Matter Basemap */}
+          {/* ESRI World Ocean Basemap */}
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            attribution='Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri'
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}"
+            maxZoom={13}
           />
 
           {/* Region Polygons layer */}

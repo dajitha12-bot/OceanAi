@@ -123,6 +123,13 @@ if DATABASE_URL:
     if backend == 'django.contrib.gis.db.backends.postgis' and not HAS_GDAL:
         backend = 'django.db.backends.postgresql'
         
+    query_params = dict(urlparse.parse_qsl(url.query))
+    options = {}
+    if 'sslmode' in query_params:
+        options['sslmode'] = query_params['sslmode']
+    elif 'neon.tech' in DATABASE_URL or 'sslmode=require' in DATABASE_URL:
+        options['sslmode'] = 'require'
+        
     db_config = {
         'ENGINE': backend,
         'NAME': url.path[1:] if url.scheme != 'sqlite' else (url.path[2:] if url.path.startswith('//') else (url.path if url.path else 'db.sqlite3')),
@@ -130,6 +137,7 @@ if DATABASE_URL:
         'PASSWORD': url.password,
         'HOST': url.hostname,
         'PORT': url.port or (5432 if backend != 'django.db.backends.sqlite3' else ''),
+        'OPTIONS': options,
     }
 
 DATABASES = {
