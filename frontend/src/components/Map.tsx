@@ -151,9 +151,9 @@ export default function MapView({ center, zoom, onLocationChange }: MapViewProps
   return (
     <div className="h-full flex flex-col relative">
       {/* Map Control Floating Bar */}
-      <div className="absolute top-4 right-4 z-[1000] bg-ocean-dark/90 backdrop-blur border border-ocean-light p-3.5 rounded shadow-2xl w-60 select-none text-xs">
-        <div className="border-b border-ocean-light/50 pb-1.5 mb-2">
-          <h4 className="font-mono font-bold tracking-wider text-slate-400 uppercase">LAYER CONTROL PANEL</h4>
+      <div className="absolute top-4 right-4 z-[1000] bg-white/95 backdrop-blur border border-ocean-waterBorder p-4 rounded-xl shadow-xl w-64 select-none text-xs">
+        <div className="border-b border-slate-100 pb-2 mb-2.5">
+          <h4 className="font-mono font-bold tracking-wider text-slate-700 uppercase">LAYER CONTROL PANEL</h4>
         </div>
         
         {/* Layer Selector */}
@@ -168,10 +168,10 @@ export default function MapView({ center, zoom, onLocationChange }: MapViewProps
             <button
               key={layer.id}
               onClick={() => setSelectedLayer(layer.id as any)}
-              className={`w-full text-left px-2.5 py-1.5 rounded transition ${
+              className={`w-full text-left px-3 py-2 rounded-lg transition text-xs ${
                 selectedLayer === layer.id
-                  ? 'bg-ocean-medium text-white font-semibold border-l-2 border-ocean-cyan'
-                  : 'text-slate-400 hover:bg-ocean-medium/55 hover:text-slate-200'
+                  ? 'bg-sky-100 text-ocean-cyan font-bold border-l-4 border-ocean-cyan shadow-2xs'
+                  : 'text-slate-600 hover:bg-sky-50 hover:text-slate-900'
               }`}
             >
               {layer.label}
@@ -180,14 +180,14 @@ export default function MapView({ center, zoom, onLocationChange }: MapViewProps
         </div>
 
         {/* Anomaly Toggle */}
-        <div className="mt-4 pt-3 border-t border-ocean-light/50 flex items-center justify-between">
-          <span className="text-slate-400 flex items-center space-x-1">
+        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+          <span className="text-slate-600 font-medium flex items-center space-x-1.5">
             <AlertCircle className="h-3.5 w-3.5 text-rose-500" />
             <span>Show Anomalies</span>
           </span>
           <button
             onClick={() => setShowAnomalies(!showAnomalies)}
-            className="text-slate-400 hover:text-white"
+            className="text-slate-400 hover:text-slate-700"
           >
             {showAnomalies ? <Eye className="h-4 w-4 text-ocean-cyan" /> : <EyeOff className="h-4 w-4" />}
           </button>
@@ -195,8 +195,8 @@ export default function MapView({ center, zoom, onLocationChange }: MapViewProps
       </div>
 
       {/* Floating Legend */}
-      <div className="absolute bottom-4 left-4 z-[1000] bg-ocean-dark/95 backdrop-blur border border-ocean-light p-3 rounded shadow-2xl text-[10px] font-mono select-none">
-        <h5 className="font-bold mb-1.5 text-slate-400 uppercase tracking-wide">
+      <div className="absolute bottom-4 left-4 z-[1000] bg-white/95 backdrop-blur border border-ocean-waterBorder p-3.5 rounded-xl shadow-xl text-[10px] font-mono select-none">
+        <h5 className="font-bold mb-2 text-slate-700 uppercase tracking-wide">
           {selectedLayer === 'temp' && 'Temperature (°C)'}
           {selectedLayer === 'sal' && 'Salinity (PSU)'}
           {selectedLayer === 'chlor' && 'Chlorophyll (mg/m³)'}

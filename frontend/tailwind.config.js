@@ -8,14 +8,18 @@ export default {
     extend: {
       colors: {
         ocean: {
-          darkest: '#070b19', // Deep navy background
-          dark: '#0e172c',    // Card/Sidebar backgrounds
-          medium: '#1b2a47',  // Interactive slates
-          light: '#3a506b',   // Border slates
-          cyan: '#00b4d8',    // Scientific data cyan
-          teal: '#48cae4',    // Highlight light cyan
-          accent: '#5bc0be',  // Ocean teal accent
-          neutral: '#f8f9fa'  // Standard scientific white background
+          darkest: '#081325',     // Deep Navy for sidebar/header
+          dark: '#0d1d3a',        // Dark Blue
+          medium: '#172d54',      // Sidebar hover/active
+          light: '#233f72',       // Dark Blue borders
+          cyan: '#0284c7',        // Ocean Blue accent
+          teal: '#0ea5e9',        // Cyan highlight
+          water: '#ebf6fc',       // Very light water blue background
+          waterLight: '#f4fafd',  // Soft water card tint
+          waterBorder: '#cce6f6', // Light water border
+          waterBorderDark: '#93c5fd', // Accent water border
+          textDark: '#0f172a',    // High-contrast primary text
+          textMuted: '#475569'    // Muted text
         }
       },
       fontFamily: {

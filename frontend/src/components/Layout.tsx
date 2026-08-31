@@ -19,21 +19,21 @@ export default function Layout({ children, activeTab, setActiveTab, isDemoMode, 
   ]
 
   return (
-    <div className="flex h-screen bg-ocean-darkest text-slate-200">
-      {/* Sidebar */}
-      <aside className="w-64 bg-ocean-dark border-r border-ocean-light flex flex-col justify-between select-none">
+    <div className="flex h-screen bg-ocean-water text-ocean-textDark overflow-hidden">
+      {/* Sidebar - Dark Blue */}
+      <aside className="w-64 bg-ocean-darkest border-r border-ocean-light flex flex-col justify-between select-none z-20 shadow-lg">
         <div>
           {/* Logo / Header */}
-          <div className="p-5 border-b border-ocean-light flex items-center space-x-3">
-            <Compass className="h-6 w-6 text-ocean-cyan animate-pulse" />
+          <div className="p-5 border-b border-ocean-light flex items-center space-x-3 bg-ocean-dark/80">
+            <Compass className="h-6 w-6 text-ocean-teal animate-pulse" />
             <div>
-              <h1 className="font-semibold text-white tracking-wider text-sm">OCEAN INTEL</h1>
-              <p className="text-[10px] text-slate-400 font-mono">DECISION PLATFORM</p>
+              <h1 className="font-bold text-white tracking-wider text-sm">OCEAN INTEL</h1>
+              <p className="text-[10px] text-sky-300/70 font-mono">DECISION PLATFORM</p>
             </div>
           </div>
           
           {/* Nav Items */}
-          <nav className="p-4 space-y-1">
+          <nav className="p-4 space-y-1.5">
             {menuItems.map((item) => {
               const Icon = item.icon
               const isActive = activeTab === item.id
@@ -41,13 +41,13 @@ export default function Layout({ children, activeTab, setActiveTab, isDemoMode, 
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id as any)}
-                  className={`flex items-center space-x-3 w-full px-4 py-3 rounded text-sm transition-all duration-150 text-left ${
+                  className={`flex items-center space-x-3 w-full px-4 py-3 rounded-lg text-sm transition-all duration-150 text-left ${
                     isActive
-                      ? 'bg-ocean-medium text-white border-l-2 border-ocean-cyan font-medium'
-                      : 'text-slate-400 hover:bg-ocean-medium/50 hover:text-slate-200'
+                      ? 'bg-ocean-medium text-white border-l-4 border-ocean-teal font-semibold shadow-md'
+                      : 'text-slate-300 hover:bg-ocean-medium/50 hover:text-white'
                   }`}
                 >
-                  <Icon className={`h-4 w-4 ${isActive ? 'text-ocean-cyan' : ''}`} />
+                  <Icon className={`h-4 w-4 ${isActive ? 'text-ocean-teal' : 'text-slate-400'}`} />
                   <span>{item.label}</span>
                 </button>
               )
@@ -56,18 +56,18 @@ export default function Layout({ children, activeTab, setActiveTab, isDemoMode, 
         </div>
 
         {/* Sidebar Footer / Connection Status */}
-        <div className="p-4 border-t border-ocean-light bg-ocean-darkest/45">
+        <div className="p-4 border-t border-ocean-light bg-black/20">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <div className={`h-2.5 w-2.5 rounded-full ${isDemoMode ? 'bg-amber-500' : 'bg-emerald-500'} animate-ping`}></div>
-              <span className="text-[11px] font-mono tracking-wider font-semibold">
+              <div className={`h-2.5 w-2.5 rounded-full ${isDemoMode ? 'bg-amber-400' : 'bg-emerald-400'} animate-pulse`}></div>
+              <span className="text-[11px] font-mono tracking-wider font-semibold text-slate-200">
                 {isDemoMode ? 'DATA MODE: DEMO' : 'DATA MODE: LIVE'}
               </span>
             </div>
             {isDemoMode && (
               <div className="group relative">
-                <AlertCircle className="h-4 w-4 text-amber-500 cursor-pointer" />
-                <div className="absolute bottom-6 right-0 w-48 bg-ocean-medium border border-ocean-light text-[10px] p-2 rounded hidden group-hover:block z-50 shadow-xl">
+                <AlertCircle className="h-4 w-4 text-amber-400 cursor-pointer" />
+                <div className="absolute bottom-6 right-0 w-48 bg-ocean-dark border border-ocean-light text-slate-200 text-[10px] p-2 rounded-lg hidden group-hover:block z-50 shadow-xl">
                   Running on fallback datasets. Configure Copernicus & LLM keys in .env for live mode.
                 </div>
               </div>
@@ -78,29 +78,29 @@ export default function Layout({ children, activeTab, setActiveTab, isDemoMode, 
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Global Header */}
-        <header className="h-16 bg-ocean-dark border-b border-ocean-light flex items-center justify-between px-6 z-10">
+        {/* Top Header - Dark Blue */}
+        <header className="h-16 bg-ocean-dark border-b border-ocean-light flex items-center justify-between px-6 z-10 shadow-sm">
           <div className="flex items-center space-x-3">
             <span className="text-xl">🌊</span>
-            <span className="font-semibold text-white tracking-wide text-md">
+            <span className="font-bold text-white tracking-wide text-md">
               AI Ocean Intelligence & Conversational Decision Platform
             </span>
           </div>
           <div className="flex items-center space-x-4 text-xs font-mono">
-            <span className="text-slate-400">SYS_STATUS:</span>
-            <span className="text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-900/50">
+            <span className="text-slate-300">SYS_STATUS:</span>
+            <span className="text-emerald-300 bg-emerald-950/60 px-2.5 py-1 rounded-md border border-emerald-500/40 font-semibold">
               OPERATIONAL
             </span>
           </div>
         </header>
 
-        {/* Dynamic Tab Body */}
-        <main className="flex-1 overflow-y-auto bg-ocean-darkest p-6 relative">
+        {/* Dynamic Tab Body - Very Light Water Blue */}
+        <main className="flex-1 overflow-y-auto bg-ocean-water p-6 relative">
           {loading ? (
-            <div className="absolute inset-0 flex items-center justify-center bg-ocean-darkest">
+            <div className="absolute inset-0 flex items-center justify-center bg-ocean-water/80 backdrop-blur-sm z-30">
               <div className="flex flex-col items-center space-y-4">
                 <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-ocean-cyan"></div>
-                <p className="text-xs font-mono text-slate-400">Loading AI Insights and Map Data...</p>
+                <p className="text-xs font-mono text-ocean-textMuted">Loading AI Insights and Map Data...</p>
               </div>
             </div>
           ) : (

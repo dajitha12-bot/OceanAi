@@ -86,17 +86,12 @@ export default function Assistant({ onLocate }: AssistantProps) {
       })
   }
 
-  // Small helper to avoid JSX curly bracket json serialization issues
   function jsonStringify(obj: any) {
     return JSON.stringify(obj)
   }
 
-  // Helper to parse potential lat/lng coords and show a dynamic button
   const renderMessageText = (text: string) => {
-    // Basic Markdown renderer parser
     const lines = text.split('\n')
-    
-    // Check if Chennai coordinates exist in message to render a Map Locate button
     let locateButtons: React.ReactNode[] = []
     
     if (text.includes("Zone B") || text.includes("Zone B (Shelf)")) {
@@ -104,7 +99,7 @@ export default function Assistant({ onLocate }: AssistantProps) {
         <button
           key="loc-b"
           onClick={() => onLocate(13.1, 80.6)}
-          className="mt-2 text-[10px] font-mono border border-ocean-cyan text-ocean-cyan bg-ocean-cyan/5 hover:bg-ocean-cyan/15 px-2.5 py-1 rounded flex items-center space-x-1"
+          className="mt-2 text-[10px] font-mono border border-ocean-cyan text-ocean-cyan bg-sky-50 hover:bg-sky-100 px-3 py-1 rounded-md flex items-center space-x-1 font-semibold"
         >
           <Locate className="h-3 w-3" />
           <span>Sync Zone B Map Layer</span>
@@ -116,7 +111,7 @@ export default function Assistant({ onLocate }: AssistantProps) {
         <button
           key="loc-a"
           onClick={() => onLocate(13.0, 80.3)}
-          className="mt-2 text-[10px] font-mono border border-ocean-cyan text-ocean-cyan bg-ocean-cyan/5 hover:bg-ocean-cyan/15 px-2.5 py-1 rounded flex items-center space-x-1"
+          className="mt-2 text-[10px] font-mono border border-ocean-cyan text-ocean-cyan bg-sky-50 hover:bg-sky-100 px-3 py-1 rounded-md flex items-center space-x-1 font-semibold"
         >
           <Locate className="h-3 w-3" />
           <span>Sync Zone A Map Layer</span>
@@ -128,7 +123,7 @@ export default function Assistant({ onLocate }: AssistantProps) {
         <button
           key="loc-c"
           onClick={() => onLocate(13.2, 81.0)}
-          className="mt-2 text-[10px] font-mono border border-ocean-cyan text-ocean-cyan bg-ocean-cyan/5 hover:bg-ocean-cyan/15 px-2.5 py-1 rounded flex items-center space-x-1"
+          className="mt-2 text-[10px] font-mono border border-ocean-cyan text-ocean-cyan bg-sky-50 hover:bg-sky-100 px-3 py-1 rounded-md flex items-center space-x-1 font-semibold"
         >
           <Locate className="h-3 w-3" />
           <span>Sync Zone C Map Layer</span>
@@ -155,18 +150,17 @@ export default function Assistant({ onLocate }: AssistantProps) {
             isBullet = true
           }
 
-          // Parse bold markdown **text**
           const parts = cleaned.split(/\*\*([^*]+)\*\*/g)
-          const content = parts.map((part, i) => (i % 2 === 1 ? <strong key={i} className="text-white font-semibold">{part}</strong> : part))
+          const content = parts.map((part, i) => (i % 2 === 1 ? <strong key={i} className="text-ocean-textDark font-bold">{part}</strong> : part))
 
-          if (isHeader) return <h3 key={idx} className="text-sm font-bold text-white uppercase tracking-wider mt-3 mb-1.5">{content}</h3>
-          if (isSubHeader) return <h4 key={idx} className="text-xs font-semibold text-ocean-cyan font-mono mt-2.5 mb-1">{content}</h4>
-          if (isBullet) return <div key={idx} className="pl-4 text-[12px] text-slate-300 leading-relaxed flex items-start space-x-1.5"><span className="text-ocean-cyan mt-0.5">•</span><span>{content}</span></div>
+          if (isHeader) return <h3 key={idx} className="text-sm font-bold text-ocean-textDark uppercase tracking-wider mt-3 mb-1.5">{content}</h3>
+          if (isSubHeader) return <h4 key={idx} className="text-xs font-bold text-ocean-cyan font-mono mt-2.5 mb-1">{content}</h4>
+          if (isBullet) return <div key={idx} className="pl-4 text-[12px] text-slate-700 leading-relaxed flex items-start space-x-1.5"><span className="text-ocean-cyan mt-0.5 font-bold">•</span><span>{content}</span></div>
 
-          return <p key={idx} className="text-[12px] text-slate-300 leading-relaxed">{content}</p>
+          return <p key={idx} className="text-[12px] text-slate-700 leading-relaxed">{content}</p>
         })}
         {locateButtons.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-2 pt-2 border-t border-ocean-light/30">
+          <div className="flex flex-wrap gap-2 mt-2 pt-2 border-t border-slate-200">
             {locateButtons}
           </div>
         )}
@@ -175,35 +169,37 @@ export default function Assistant({ onLocate }: AssistantProps) {
   }
 
   return (
-    <div className="h-full flex flex-col max-w-[1000px] mx-auto bg-ocean-dark border border-ocean-light rounded">
+    <div className="h-full flex flex-col max-w-[1000px] mx-auto bg-white border border-ocean-waterBorder rounded-xl shadow-sm overflow-hidden">
       {/* Chat Header */}
-      <div className="p-4 border-b border-ocean-light flex items-center justify-between select-none">
-        <div className="flex items-center space-x-2.5">
-          <Compass className="h-5 w-5 text-ocean-cyan" />
+      <div className="p-4 bg-sky-50/80 border-b border-ocean-waterBorder flex items-center justify-between select-none">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 bg-white rounded-lg shadow-xs text-ocean-cyan">
+            <Compass className="h-5 w-5" />
+          </div>
           <div>
-            <h3 className="text-xs font-mono font-bold tracking-wider text-white uppercase">AI OCEAN INTELLIGENCE ASSISTANT</h3>
-            <p className="text-[10px] text-slate-400 font-mono">Grounded via Copernicus & OBIS RAG Pipelines</p>
+            <h3 className="text-xs font-mono font-bold tracking-wider text-ocean-textDark uppercase">AI OCEAN INTELLIGENCE ASSISTANT</h3>
+            <p className="text-[10px] text-slate-500 font-mono">Grounded via Copernicus & OBIS RAG Pipelines</p>
           </div>
         </div>
-        <div className="flex items-center space-x-1 text-[10px] font-mono text-emerald-400 bg-emerald-950/45 px-2 py-0.5 rounded border border-emerald-900/50">
-          <CheckCircle className="h-3 w-3" />
-          <span>Active RAG context loaded</span>
+        <div className="flex items-center space-x-1.5 text-[10px] font-mono text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full font-semibold border border-emerald-200">
+          <CheckCircle className="h-3.5 w-3.5" />
+          <span>Active RAG Context Loaded</span>
         </div>
       </div>
 
       {/* Suggestion Prompts */}
       {messages.length === 1 && (
-        <div className="p-4 bg-ocean-darkest/50 border-b border-ocean-light select-none">
-          <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider block mb-2 flex items-center space-x-1">
-            <HelpCircle className="h-3.5 w-3.5" />
+        <div className="p-5 bg-sky-50/40 border-b border-ocean-waterBorder select-none">
+          <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider block mb-2.5 flex items-center space-x-1 font-bold">
+            <HelpCircle className="h-3.5 w-3.5 text-ocean-cyan" />
             <span>Suggested Questions:</span>
           </span>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
             {samplePrompts.map((p, idx) => (
               <button
                 key={idx}
                 onClick={() => handleSend(p)}
-                className="text-left text-[11px] bg-ocean-medium/30 hover:bg-ocean-medium/70 text-slate-300 px-3 py-2 rounded border border-ocean-light/50 transition duration-150"
+                className="text-left text-[11px] bg-white hover:bg-sky-50 text-slate-700 hover:text-ocean-cyan px-3.5 py-2.5 rounded-lg border border-sky-200 transition duration-150 shadow-2xs font-medium"
               >
                 {p}
               </button>
@@ -213,7 +209,7 @@ export default function Assistant({ onLocate }: AssistantProps) {
       )}
 
       {/* Messages Stream */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-ocean-waterLight/40">
         {messages.map((m) => {
           const isAssistant = m.role === 'assistant'
           return (
@@ -225,23 +221,23 @@ export default function Assistant({ onLocate }: AssistantProps) {
             >
               {/* Avatar */}
               <div
-                className={`h-8 w-8 rounded flex items-center justify-center shrink-0 text-white ${
-                  isAssistant ? 'bg-ocean-medium border border-ocean-light' : 'bg-ocean-cyan'
+                className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 shadow-xs ${
+                  isAssistant ? 'bg-white border border-sky-200 text-ocean-cyan' : 'bg-ocean-cyan text-white'
                 }`}
               >
-                {isAssistant ? <Compass className="h-4.5 w-4.5 text-ocean-cyan" /> : <User className="h-4.5 w-4.5" />}
+                {isAssistant ? <Compass className="h-4.5 w-4.5" /> : <User className="h-4.5 w-4.5" />}
               </div>
 
               {/* Message Bubble */}
               <div
-                className={`p-4 rounded border text-xs leading-relaxed ${
+                className={`p-4 rounded-xl border text-xs leading-relaxed shadow-2xs ${
                   isAssistant
-                    ? 'bg-ocean-medium/15 border-ocean-light text-slate-200'
-                    : 'bg-ocean-medium border-ocean-light text-white font-medium'
+                    ? 'bg-white border-ocean-waterBorder text-ocean-textDark'
+                    : 'bg-ocean-cyan border-ocean-cyan text-white font-medium shadow-sm'
                 }`}
               >
                 {typeof m.text === 'string' ? renderMessageText(m.text) : m.text}
-                <div className="text-[9px] text-slate-500 font-mono mt-2 text-right">
+                <div className={`text-[9px] font-mono mt-2 text-right ${isAssistant ? 'text-slate-400' : 'text-sky-100'}`}>
                   {m.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
               </div>
@@ -250,8 +246,8 @@ export default function Assistant({ onLocate }: AssistantProps) {
         })}
 
         {sending && (
-          <div className="flex items-center space-x-2 text-xs font-mono text-slate-400 pl-4 animate-pulse">
-            <div className="animate-spin rounded-full h-3.5 w-3.5 border-t border-b border-ocean-cyan"></div>
+          <div className="flex items-center space-x-2 text-xs font-mono text-ocean-cyan pl-4 animate-pulse font-semibold">
+            <div className="animate-spin rounded-full h-3.5 w-3.5 border-t-2 border-b-2 border-ocean-cyan"></div>
             <span>RAG database scan and model inference in progress...</span>
           </div>
         )}
@@ -264,20 +260,20 @@ export default function Assistant({ onLocate }: AssistantProps) {
           e.preventDefault()
           handleSend(input)
         }}
-        className="p-4 border-t border-ocean-light flex items-center space-x-3 bg-ocean-darkest/45"
+        className="p-4 border-t border-ocean-waterBorder flex items-center space-x-3 bg-white"
       >
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask about Tuna suitability near Chennai or active temperature anomalies..."
-          className="flex-1 bg-ocean-dark border border-ocean-light rounded px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-ocean-cyan font-sans"
+          className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-xs text-ocean-textDark placeholder-slate-400 focus:outline-none focus:border-ocean-cyan focus:bg-white font-sans transition"
           disabled={sending}
         />
         <button
           type="submit"
           disabled={!input.trim() || sending}
-          className="bg-ocean-cyan hover:bg-ocean-teal disabled:bg-ocean-medium disabled:text-slate-500 text-white font-semibold px-4 py-2.5 rounded transition flex items-center space-x-1 shrink-0"
+          className="bg-ocean-cyan hover:bg-sky-600 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold px-4 py-2.5 rounded-lg transition flex items-center space-x-1 shrink-0 shadow-sm"
         >
           <Send className="h-4 w-4" />
         </button>
