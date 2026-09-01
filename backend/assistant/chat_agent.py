@@ -173,6 +173,7 @@ def query_llm_assistant(user_message):
                 }
             }
             
+            last_error = ""
             for m in model_candidates:
                 endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent?key={key}"
                 try:
@@ -182,8 +183,15 @@ def query_llm_assistant(user_message):
                         text = data.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', '')
                         if text:
                             return text
-                except Exception:
+                    else:
+                        last_error = f"HTTP {res.status_code}: {res.text[:120]}"
+                except Exception as ex:
+                    last_error = str(ex)
                     continue
+            
+            # If all Gemini models are busy (503/429) or unavailable, return grounded fallback
+            prefix = f"*(Notice: AI Model is experiencing high demand. Responding with Grounded Database Mode)*\n\n" if last_error else ""
+            return prefix + generate_mock_chat_response(user_message, db_context, rag_chunks)
             
         elif provider == 'openai':
             from openai import OpenAI
@@ -195,12 +203,13 @@ def query_llm_assistant(user_message):
                     {"role": "user", "content": combined_prompt}
                 ]
             )
-            return response.choices[0].message.content
+            return response.choices[0].message.content or generate_mock_chat_response(user_message, db_context, rag_chunks)
             
     except Exception as e:
-        # Fallback to local grounded answer if LLM quota / key issue occurs
-        return f"*(LLM Notice: {str(e)})*\n\n" + \
-               generate_mock_chat_response(user_message, db_context, rag_chunks)
+        # Fallback to local grounded answer if any unhandled error occurs
+        return generate_mock_chat_response(user_message, db_context, rag_chunks)
+
+    return generate_mock_chat_response(user_message, db_context, rag_chunks)
 
 
 def generate_mock_chat_response(message, db_context, rag_chunks):

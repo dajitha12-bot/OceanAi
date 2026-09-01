@@ -38,22 +38,28 @@ class ChatAssistantView(APIView):
         if not message:
             return Response({"error": "Message is required."}, status=status.HTTP_400_BAD_REQUEST)
             
-        # 1. Log User Message
-        ChatHistory.objects.create(
-            session_id=session_id,
-            role='user',
-            message=message
-        )
+        # 1. Log User Message safely
+        try:
+            ChatHistory.objects.create(
+                session_id=session_id,
+                role='user',
+                message=message
+            )
+        except Exception:
+            pass
         
         # 2. Run Assistant Query
-        response_text = query_llm_assistant(message)
+        response_text = query_llm_assistant(message) or "I analyzed the ocean intelligence database, but could not produce a response. Please try rephrasing your question."
         
-        # 3. Log Assistant Response
-        ChatHistory.objects.create(
-            session_id=session_id,
-            role='assistant',
-            message=response_text
-        )
+        # 3. Log Assistant Response safely
+        try:
+            ChatHistory.objects.create(
+                session_id=session_id,
+                role='assistant',
+                message=response_text
+            )
+        except Exception:
+            pass
         
         # Return chat payload
         return Response({
